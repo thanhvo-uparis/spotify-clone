@@ -782,7 +782,7 @@
 .auth-form-content {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-lg);
+    gap: 5px;
     margin-bottom: var(--spacing-xl);
 }
 

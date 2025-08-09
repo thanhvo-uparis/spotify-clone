@@ -14,13 +14,24 @@ class HttpRequest {
                 },
             }
 
+            if (options.requiresAuth) {
+                const token = localStorage.getItem("access_token");
+                if (!token) {
+                    throw new Error("Can't find Access Token");
+                }
+                _options.headers["Authorization"] = `Bearer ${token}`;
+            }
+
             if (data) {
                 _options.body = JSON.stringify(data)
             }
 
             const res = await fetch(`${this.baseUrl}${path}`, _options);
 
-            if (!res.ok) throw new Error(`HTTP error: `, res.status);
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.message || `Lỗi HTTP: ${res.status}`);
+            }
             const response =  await res.json();
             return response;
         }catch (error) {
