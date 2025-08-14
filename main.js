@@ -1,18 +1,23 @@
 import httpRequest from './utils/httpRequest.js';
 import {showSignupForm, showLoginForm, openModal, closeModal} from './utils/authModal.js'
+import {updateUiAfterLogin, refreshToken} from './utils/utils.js';
+
+const signupBtn = document.querySelector(".signup-btn");
+const loginBtn = document.querySelector(".login-btn");
+const authModal = document.getElementById("authModal");
+const modalClose = document.getElementById("modalClose");
+const signupForm = document.getElementById("signupForm");
+const loginForm = document.getElementById("loginForm");
+const showLoginBtn = document.getElementById("showLogin");
+const showSignupBtn = document.getElementById("showSignup");
+const userDropdown = document.getElementById("userDropdown");
+
+document.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+})
+
 // Auth Modal Functionality
 document.addEventListener("DOMContentLoaded", function () {
-    // Get DOM elements
-     const signupBtn = document.querySelector(".signup-btn");
-     const loginBtn = document.querySelector(".login-btn");
-     const authModal = document.getElementById("authModal");
-     const modalClose = document.getElementById("modalClose");
-     const signupForm = document.getElementById("signupForm");
-     const loginForm = document.getElementById("loginForm");
-     const showLoginBtn = document.getElementById("showLogin");
-     const showSignupBtn = document.getElementById("showSignup");
-     const userDropdown = document.getElementById("userDropdown");
-    
     // Open modal with Sign Up form when clicking Sign Up button
     signupBtn.addEventListener("click", function () {
         showSignupForm();
@@ -90,13 +95,20 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    if (localStorage.getItem("access_token")) {
+        const authButtons = document.querySelector(".auth-buttons");
+        if (authButtons) authButtons.style.display = "none";
+    }
+    refreshToken();
+});
+
 // Other functionality
 signupForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const username = document.getElementById("userName").value;
     const email = document.getElementById("signupEmail").value;
     const password = document.getElementById("signupPassword").value;
-    const avatar_url = ""
     try {
         const data = await httpRequest.post("/auth/register", {username, email, password});
         //thông tin người dùng đăng ký
@@ -118,22 +130,8 @@ loginForm.addEventListener("submit", async (event) => {
     try {
         const data = await httpRequest.post("/auth/login", {email, password});
         localStorage.setItem("access_token", data.access_token);
-        updateUiAfterLogin(data.user);
+        updateUiAfterLogin(data);
     } catch (error) {
         console.error("Lỗi đăng nhập: ", error.message);
     }
 })
-
-function updateUiAfterLogin(data) {
-    closeModal();
-    const authButtons = document.querySelector(".auth-buttons");
-    authButtons.style.display = "none";
-
-    const dropdownItem = document.createElement("div");
-    dropdownItem.className = "dropdown-item";
-
-    const userName = document.createElement("span");
-    userName.textContent = data["username"];
-    dropdownItem.appendChild(userName);
-    userDropdown.appendChild(dropdownItem);
-}
