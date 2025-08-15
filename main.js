@@ -1,6 +1,9 @@
 import httpRequest from './utils/httpRequest.js';
 import {showSignupForm, showLoginForm, openModal, closeModal} from './utils/authModal.js'
-import {updateUiAfterLogin, refreshToken} from './utils/utils.js';
+import {updateUiAfterLogin, refreshToken, getBiggestHits, getPopularArtists} from './utils/utils.js';
+
+getBiggestHits();
+getPopularArtists();
 
 const signupBtn = document.querySelector(".signup-btn");
 const loginBtn = document.querySelector(".login-btn");
