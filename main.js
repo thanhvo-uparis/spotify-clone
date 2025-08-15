@@ -1,3 +1,8 @@
+import "./components/app-heading.js"
+import "./components/app-sidebar.js"
+import "./components/app-main.js"
+import "./components/app-footer.js"
+
 import httpRequest from './utils/httpRequest.js';
 import {showSignupForm, showLoginForm, openModal, closeModal} from './utils/authModal.js'
 import {updateUiAfterLogin, refreshToken, getBiggestHits, getPopularArtists} from './utils/utils.js';

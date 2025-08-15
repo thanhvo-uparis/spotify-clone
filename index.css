@@ -1,0 +1,61 @@
+.app-container {
+    display: grid;
+    grid-template-areas:
+        "sidebar main"
+        "player player";
+    grid-template-columns: 280px 1fr;
+    grid-template-rows: 1fr 72px;
+    height: 100vh;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background-color: var(--bg-primary);
+}
+
+app-sidebar {
+    grid-area: sidebar;
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
+    overflow-y: auto;
+    z-index: var(--z-sidebar);
+}
+
+.main-content {
+    grid-area: main;
+    background: linear-gradient(
+        to bottom,
+        #535353 0%,
+        var(--bg-secondary) 250px
+    );
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+app-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background-color: transparent;
+    z-index: var(--z-header);
+}
+
+app-main {
+    flex: 1;
+    padding: 0 var(--spacing-lg) var(--spacing-lg);
+    overflow-y: auto;
+}
+
+app-footer {
+    grid-area: player;
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: var(--z-player);
+    border-top: 1px solid var(--border-color);
+}

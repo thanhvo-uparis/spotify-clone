@@ -28,7 +28,7 @@
         grid-template-columns: 240px 1fr;
     }
 
-    .sidebar {
+    app-sidebar {
         padding: var(--spacing-md);
     }
 
@@ -75,7 +75,7 @@
         padding: 0;
     }
 
-    .sidebar {
+    app-sidebar {
         display: none;
     }
 
@@ -83,7 +83,7 @@
         border-radius: 0;
     }
 
-    .main-header {
+    app-heading {
         padding: var(--spacing-md);
         flex-wrap: wrap;
         gap: var(--spacing-md);
@@ -126,7 +126,7 @@
         font-size: 14px;
     }
 
-    .content-wrapper {
+    app-main {
         padding: 0 var(--spacing-md) var(--spacing-md);
     }
 
@@ -166,7 +166,7 @@
         font-size: 20px;
     }
 
-    .player {
+    app-footer {
         border-radius: 0;
         padding: var(--spacing-md);
         border-top: 1px solid var(--border-color);
@@ -337,8 +337,8 @@
         display: block;
     }
 
-    .sidebar,
-    .player {
+    app-sidebar,
+    app-footer {
         display: none;
     }
 
