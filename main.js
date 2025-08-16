@@ -5,10 +5,37 @@ import "./components/app-footer.js"
 
 import httpRequest from './utils/httpRequest.js';
 import {showSignupForm, showLoginForm, openModal, closeModal} from './utils/authModal.js'
-import {updateUiAfterLogin, refreshToken, getBiggestHits, getPopularArtists} from './utils/utils.js';
+import {updateUiAfterLogin, refreshToken, getBiggestHits, getPopularArtists, getArtist, getPlaylist, getId} from './utils/utils.js';
 
 getBiggestHits();
 getPopularArtists();
+getPlaylist();
+
+//khi click chọn Playlists hoặc Artists ở navbar: thì nó sẽ get dữ liệu tương ứng và add class active
+document.addEventListener("DOMContentLoaded", async function () {
+    const navTabs = await waitForShadowElement("app-sidebar", ".nav-tabs");
+
+    navTabs.addEventListener("click", async (e) => {
+        const item = e.target.closest(".artists-tab");
+        
+        if (item) {
+            const libraryContent =  await waitForShadowElement("app-sidebar", ".library-content");
+            libraryContent.innerHTML = "";
+            const tabs = navTabs.querySelectorAll(".nav-tab");
+            tabs.forEach(tab => tab.classList.remove("active"));
+            item.classList.add("active");
+            getArtist();
+        }
+        else {
+            const libraryContent =  await waitForShadowElement("app-sidebar", ".library-content");
+            libraryContent.innerHTML = "";
+            const tabs = navTabs.querySelectorAll(".nav-tab");
+            tabs.forEach(tab => tab.classList.remove("active"));
+            e.target.closest(".playlists-tab").classList.add("active");
+            getPlaylist();
+        }
+    })
+})
 
 export async function waitForShadowElement(hostSelector, shadowSelector, timeout = 2000) {
     const start = Date.now();

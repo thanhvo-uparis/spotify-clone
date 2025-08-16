@@ -51,35 +51,43 @@ export const getBiggestHits = async () => {
         const hitsGrid = await waitForShadowElement("app-main", ".hits-grid");
         const res = await httpRequest.get("/tracks/popular?limit=20");
         const listTracks = res.tracks;
-        const html = listTracks.map((item) => {
-            return `
-            <div class="hit-card">
-            <div class="hit-card-cover">
-                <img
-                    src="${item.image_url}?height=160&width=160"
-                    alt="Flowers"
-                />
-                <button class="hit-play-btn">
-                    <i class="fas fa-play"></i>
-                </button>
-            </div>
-            <div class="hit-card-info">
-                <h3 class="hit-card-title">${item.title}</h3>
-                <p class="hit-card-artist">${item.artist_name}</p>
-            </div>
-            </div>
-            `
-        }).join("");
-        hitsGrid.innerHTML = html;
+        listTracks.map((item) => {
+            const hitCard = document.createElement("div");
+            hitCard.className = "hit-card";
+            const id = item.id;
+            hitCard.setAttribute("data-id", id);
+            
+            const html = `
+                <div class="hit-card-cover">
+                    <img
+                        src="${item.image_url}?height=160&width=160"
+                        alt="Flowers"
+                    />
+                    <button class="hit-play-btn">
+                        <i class="fas fa-play"></i>
+                    </button>
+                </div>
+                <div class="hit-card-info">
+                    <h3 class="hit-card-title">${item.title}</h3>
+                    <p class="hit-card-artist">${item.artist_name}</p>
+                </div>
+            `;
+            hitCard.innerHTML = html;
+            hitsGrid.appendChild(hitCard);
+        })
 }
 
 export const getPopularArtists = async () => {
         const artistsGrid = await waitForShadowElement("app-main", ".artists-grid");
         const res = await httpRequest.get("/artists");
         const listArtists = res.artists;
-        const html = listArtists.map((item) => {
-            return `
-            <div class="artist-card">
+
+        listArtists.map((item) => {
+            const artistCard = document.createElement("div");
+            artistCard.className = "artist-card";
+            const id = item.id;
+            artistCard.setAttribute("data-id", id);
+            const html = `
                 <div class="artist-card-cover">
                     <img
                         src="${item.image_url}?height=160&width=160"
@@ -93,8 +101,91 @@ export const getPopularArtists = async () => {
                     <h3 class="artist-card-name">${item.name}</h3>
                     <p class="artist-card-type">Artist</p>
                 </div>
-            </div>
-            `
-        }).join("");
-        artistsGrid.innerHTML = html;
+            `;
+            
+            artistCard.innerHTML = html;
+            artistsGrid.appendChild(artistCard);
+        })
 }
+
+export const getArtist = async () => {
+        const libraryContent = await waitForShadowElement("app-sidebar", ".library-content");
+        const res = await httpRequest.get("/artists/trending?limit=4");
+        const listArtists = res.artists;
+        
+        listArtists.map((item) => {
+            let libraryItem = document.createElement("div");
+            libraryItem.className = "library-item";
+            let html =  `
+            <div class = "item-image-wrapper">
+                <img
+                    src="${item.image_url}?height=48&width=48"
+                    alt="${item.name}"
+                    class="item-image"
+                />
+                <button class = "sidebar-play-btn">
+                    <i class="fa-solid fa-pause"></i>
+                </button>
+            </div>
+            <div class="item-info">
+                <div class="item-title">${item.name}</div>
+                <div class="item-subtitle">Artist</div>
+            </div>
+            `;
+            const id = item.id;
+            libraryItem.setAttribute("data-id", id);
+            libraryItem.innerHTML = html;
+            libraryContent.appendChild(libraryItem);
+        })
+}
+
+export const getPlaylist = async () => {
+        const libraryContent = await waitForShadowElement("app-sidebar", ".library-content");
+        const res = await httpRequest.get("/playlists?limit=4");
+        const listPlaylists = res.playlists;
+        
+        listPlaylists.map((item) => {
+            let libraryItem = document.createElement("div");
+            libraryItem.className = "library-item";
+            let html =  `
+            <div class = "item-image-wrapper">
+                <img
+                    src="${item.image_url}?height=48&width=48"
+                    alt="${item.name}"
+                    class="item-image"
+                />
+                <button class="sidebar-play-btn">
+                    <i class="fa-solid fa-pause"></i>
+                </button>
+            </div>
+            <div class="item-info">
+                <div class="item-title">${item.name}</div>
+                <div class="item-subtitle">Playlist</div>
+            </div>
+            `;
+            const id = item.id;
+            libraryItem.setAttribute("data-id", id);
+            libraryItem.innerHTML = html;
+            libraryContent.appendChild(libraryItem);
+        })
+}
+
+//appName, classDiv, classItem sont sous un format de string
+//@def: get Id of element when clicked
+export const getId = async (appName, classDiv, classItem) => {
+    document.addEventListener("DOMContentLoaded", async function () {
+        const libraryContent = await waitForShadowElement(appName, classDiv);
+        console.log(libraryContent);
+        
+        libraryContent.addEventListener("click", (e) => {
+            const itemSelected = e.target.closest(classItem);
+            if (itemSelected) {
+                console.log(itemSelected.dataset.id);
+            }
+        })
+    })
+} 
+
+export const getArtistDetails = async () => {
+
+} 
