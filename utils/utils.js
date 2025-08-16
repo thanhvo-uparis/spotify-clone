@@ -1,9 +1,10 @@
 import {showSignupForm, showLoginForm, openModal, closeModal} from './authModal.js';
 import httpRequest from './httpRequest.js';
+import {waitForShadowElement} from '../main.js';
 
-export function updateUiAfterLogin(data) {
+export async function updateUiAfterLogin(data) {
     closeModal();
-    const authButtons = document.querySelector(".auth-buttons");
+    const authButtons = await waitForShadowElement("app-heading", ".auth-buttons");
     authButtons.style.display = "none";
 
     const dropdownItem = document.createElement("div");
@@ -12,6 +13,8 @@ export function updateUiAfterLogin(data) {
     const userName = document.createElement("span");
     userName.textContent = data.user["username"];
     dropdownItem.appendChild(userName);
+
+    const userDropdown = await waitForShadowElement("app-heading", "#userDropdown");
     userDropdown.appendChild(dropdownItem);
 }
 
@@ -21,8 +24,6 @@ export const refreshToken = async () => {
         try {
             //lấy thông tin user với token hiện tại trong localStorage
             const userData = await httpRequest.get("/users/me", {requiresAuth: true});
-            console.log("thực hiện get current user!");
-            
             updateUiAfterLogin(userData);
         } catch (error) {
             //lỗi token hết hạn, refresh token lại để lấy token mới
@@ -47,7 +48,7 @@ export const refreshToken = async () => {
 }
 
 export const getBiggestHits = async () => {
-        const hitsGrid = document.querySelector(".hits-grid");
+        const hitsGrid = await waitForShadowElement("app-main", ".hits-grid");
         const res = await httpRequest.get("/tracks/popular?limit=20");
         const listTracks = res.tracks;
         const html = listTracks.map((item) => {
@@ -73,7 +74,7 @@ export const getBiggestHits = async () => {
 }
 
 export const getPopularArtists = async () => {
-        const artistsGrid = document.querySelector(".artists-grid");
+        const artistsGrid = await waitForShadowElement("app-main", ".artists-grid");
         const res = await httpRequest.get("/artists");
         const listArtists = res.artists;
         const html = listArtists.map((item) => {

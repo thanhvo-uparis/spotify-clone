@@ -10,22 +10,30 @@ import {updateUiAfterLogin, refreshToken, getBiggestHits, getPopularArtists} fro
 getBiggestHits();
 getPopularArtists();
 
-const signupBtn = document.querySelector(".signup-btn");
-const loginBtn = document.querySelector(".login-btn");
+export async function waitForShadowElement(hostSelector, shadowSelector, timeout = 2000) {
+    const start = Date.now();
+    while (Date.now() - start < timeout) {
+        const host = document.querySelector(hostSelector);
+        if (host && host.shadowRoot) {
+            const el = host.shadowRoot.querySelector(shadowSelector);
+            if (el) return el;
+        }
+        await new Promise(r => setTimeout(r, 20));
+    }
+    return null;
+}
+
 const authModal = document.getElementById("authModal");
 const modalClose = document.getElementById("modalClose");
 const signupForm = document.getElementById("signupForm");
 const loginForm = document.getElementById("loginForm");
 const showLoginBtn = document.getElementById("showLogin");
 const showSignupBtn = document.getElementById("showSignup");
-const userDropdown = document.getElementById("userDropdown");
 
-document.addEventListener("contextmenu", (event) => {
-    event.preventDefault();
-})
+document.addEventListener("DOMContentLoaded", async function () {
+    const signupBtn = await waitForShadowElement("app-heading", ".signup-btn");
+    const loginBtn = await waitForShadowElement("app-heading", ".login-btn");
 
-// Auth Modal Functionality
-document.addEventListener("DOMContentLoaded", function () {
     // Open modal with Sign Up form when clicking Sign Up button
     signupBtn.addEventListener("click", function () {
         showSignupForm();
@@ -63,16 +71,23 @@ document.addEventListener("DOMContentLoaded", function () {
     showSignupBtn.addEventListener("click", function () {
         showSignupForm();
     });
-});
+    
+})
+
+document.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+})
 
 // User Menu Dropdown Functionality
-document.addEventListener("DOMContentLoaded", function () {
-    const userAvatar = document.getElementById("userAvatar");
-    const logoutBtn = document.getElementById("logoutBtn");
-
+document.addEventListener("DOMContentLoaded", async function () {
+    const userAvatar = await waitForShadowElement("app-heading", "#userAvatar");
+    const logoutBtn = await waitForShadowElement("app-heading", "#logoutBtn");
+    const userDropdown = await waitForShadowElement("app-heading", "#userDropdown");
     // Toggle dropdown when clicking avatar
     userAvatar.addEventListener("click", function (e) {
         e.stopPropagation();
+        console.log(userDropdown);
+        
         userDropdown.classList.toggle("show");
     });
 
@@ -103,9 +118,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
     if (localStorage.getItem("access_token")) {
-        const authButtons = document.querySelector(".auth-buttons");
+        const authButtons = await waitForShadowElement("app-heading", ".auth-buttons");
         if (authButtons) authButtons.style.display = "none";
     }
     refreshToken();
