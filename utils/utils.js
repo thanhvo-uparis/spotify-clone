@@ -56,7 +56,6 @@ export const getBiggestHits = async () => {
             hitCard.className = "hit-card";
             const id = item.id;
             hitCard.setAttribute("data-id", id);
-            
             const html = `
                 <div class="hit-card-cover">
                     <img
@@ -115,11 +114,11 @@ export const getArtist = async () => {
         
         listArtists.map((item) => {
             let libraryItem = document.createElement("div");
-            libraryItem.className = "library-item";
+            libraryItem.className = "library-item artist";
             let html =  `
             <div class = "item-image-wrapper">
                 <img
-                    src="${item.image_url}?height=48&width=48"
+                    src="${item.image_url}"
                     alt="${item.name}"
                     class="item-image"
                 />
@@ -146,11 +145,11 @@ export const getPlaylist = async () => {
         
         listPlaylists.map((item) => {
             let libraryItem = document.createElement("div");
-            libraryItem.className = "library-item";
+            libraryItem.className = "library-item playlist";
             let html =  `
             <div class = "item-image-wrapper">
                 <img
-                    src="${item.image_url}?height=48&width=48"
+                    src="${item.image_url}"
                     alt="${item.name}"
                     class="item-image"
                 />
@@ -184,8 +183,4 @@ export const getId = async (appName, classDiv, classItem) => {
             }
         })
     })
-} 
-
-export const getArtistDetails = async () => {
-
-} 
+}

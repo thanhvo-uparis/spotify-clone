@@ -1,3 +1,5 @@
+import httpRequest from "../utils/httpRequest.js";
+
 class AppSideBar extends HTMLElement {
     constructor(){
         super();
@@ -23,6 +25,34 @@ class AppSideBar extends HTMLElement {
         <style>${css}</style>
         ${html}
         `
+        const libraryContent= this.shadowRoot.querySelector(".library-content");
+        
+        libraryContent.addEventListener("click", async (e) => {
+            const item = e.target.closest(".library-item");
+            //kiểm tra nếu là artist hay playlist
+            const isArtist = item?.className.includes("artist");
+            const isPlaylist = item?.className.includes("playlist");
+            
+            if (isArtist) {
+                let idCurrentArtist = item.dataset.id;
+                const data =  await httpRequest.get(`/artists/${idCurrentArtist}/tracks/popular`);                
+                localStorage.setItem("idCurrentArtist", idCurrentArtist);
+                const appMain = document.querySelector("app-main");
+                if (appMain && typeof appMain.renderArtist === "function") {
+                    appMain.renderArtist(data);
+                }
+            }
+            if (isPlaylist) {
+                let idCurrentPlaylist = item.dataset.id;
+                localStorage.setItem("idCurrentPlaylist", idCurrentPlaylist);
+                const dataPlaylist =  await httpRequest.get(`/playlists/${idCurrentPlaylist}`);
+                const dataTracks = await httpRequest.get(`/playlists/${idCurrentPlaylist}/tracks`);
+                const appMain = document.querySelector("app-main");
+                if (appMain && typeof appMain.renderArtist === "function") {
+                    appMain.renderPlaylist(dataPlaylist, dataTracks.tracks);
+                }
+            }
+        })
     }
 }
 customElements.define("app-sidebar", AppSideBar);
