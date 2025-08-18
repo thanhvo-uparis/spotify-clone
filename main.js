@@ -5,11 +5,28 @@ import "./components/app-footer.js"
 
 import httpRequest from './utils/httpRequest.js';
 import {showSignupForm, showLoginForm, openModal, closeModal} from './utils/authModal.js'
-import {updateUiAfterLogin, refreshToken, getBiggestHits, getPopularArtists, getArtist, getPlaylist, getId} from './utils/utils.js';
+import {updateUiAfterLogin, refreshToken, getBiggestHits, getPopularArtists, getArtist, getPlaylist, getId, renderHomePage} from './utils/utils.js';
 
-getBiggestHits();
-getPopularArtists();
 getPlaylist();
+
+//quay về home khi bấm vào logo và icon HOME
+document.addEventListener("DOMContentLoaded", async function () {
+    
+    const logoElement = await waitForShadowElement("app-sidebar", ".logo");
+    const homeElement = await waitForShadowElement("app-heading", ".search-box");
+    logoElement.addEventListener("click", (e) => {
+        const iconLogo = e.target.closest(".fa-spotify");
+        if (iconLogo) {
+            renderHomePage(iconLogo);
+        }
+    })
+    homeElement.addEventListener("click", async (e) => {
+        const iconHome = e.target.closest(".home-btn");
+        if (iconHome) {
+            renderHomePage(iconHome);
+        }
+    })
+})
 
 //khi click chọn Playlists hoặc Artists ở navbar: thì nó sẽ get dữ liệu tương ứng và add class active
 document.addEventListener("DOMContentLoaded", async function () {

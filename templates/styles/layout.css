@@ -8,6 +8,10 @@
     color: var(--text-primary);
 }
 
+.logo .fa-spotify:hover {
+    cursor: pointer;
+}
+
 .sidebar-nav {
     display: flex;
     flex-direction: column;

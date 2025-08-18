@@ -5,7 +5,7 @@ class AppMain extends HTMLElement {
         super();
         this.attachShadow({mode: "open"});
     }
-
+    //render nội dung ở app-main khi click chọn các playlist bên sidebar
     renderPlaylist(dataPlaylist, dataTracks) {
             const pageDetails = `
                     <section class="artist-hero">
@@ -78,7 +78,7 @@ class AppMain extends HTMLElement {
                 trackList.appendChild(item);
             })
     }
-
+    //render nội dung ở app-main khi click chọn các artist bên sidebar
     renderArtist(data) {
             const tracks = data.tracks;
             const pageDetails = `
@@ -152,7 +152,7 @@ class AppMain extends HTMLElement {
                 trackList.appendChild(item);
             })
     }
-
+    //render nội dung ở app-main khi click chọn các bài hát ở app-main
     renderTrack(data) {
         const pageDetails = `
                 <section class="artist-hero">
@@ -218,10 +218,7 @@ class AppMain extends HTMLElement {
         `
     }
 
-    async connectedCallback() {
-        let isPlaying = false;
-        localStorage.setItem("isPlaying", isPlaying);
-        let id = "";
+    async renderHome() {
         const cssFiles = [
             "../templates/styles/reset.css",
             "../templates/styles/components.css",
@@ -243,7 +240,19 @@ class AppMain extends HTMLElement {
         <style>${css}</style>
         ${html}
         `
+        //render biggest hit và popular artist lần đầu
+        import("../utils/utils.js").then(utils => {
+            utils.getBiggestHits();
+            utils.getPopularArtists();
+        })
+    }
+
+    async connectedCallback() {
+        let isPlaying = false;
+        localStorage.setItem("isPlaying", isPlaying);
+        let id = "";
         
+        await this.renderHome();
         //lưu ý: ở callback, cần sử dụng arrow function để this trỏ đúng về instance của AppMain
         // nếu dùng function (e) {....}: this sẽ trỏ tới chính shadowRoot => lỗi hoặc ko làm gì cả.
         this.shadowRoot.addEventListener("click", async (e) => {

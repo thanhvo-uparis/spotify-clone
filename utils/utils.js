@@ -184,3 +184,11 @@ export const getId = async (appName, classDiv, classItem) => {
         })
     })
 }
+
+//rendeer Home Page when clicking logo and home icon
+export async function renderHomePage(elementTarget) {
+    const appMain = document.querySelector("app-main");
+    if (elementTarget && appMain && typeof appMain.renderHome === "function") {
+        await appMain.renderHome();
+    }
+}
