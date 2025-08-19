@@ -55,7 +55,7 @@ class AppMain extends HTMLElement {
                 item.setAttribute("data-trackId", track.track_id);
                 //có sẵn class playing để thể hiện track đang phát
                 item.innerHTML = `
-                    <div class="track-btn-play">
+                    <div class="play-btn-below">
                             <i class="fa-solid fa-play"></i>
                     </div>
                     <div class="track-image">
@@ -129,7 +129,7 @@ class AppMain extends HTMLElement {
                 item.setAttribute("data-trackId", track.id);
                 //có sẵn class playing để  thể hiện track đang phát
                 item.innerHTML = `
-                    <div class="track-btn-play">
+                    <div class="play-btn-below">
                             <i class="fa-solid fa-play"></i>
                     </div>
                     <div class="track-image">
@@ -153,7 +153,7 @@ class AppMain extends HTMLElement {
             })
     }
     //render nội dung ở app-main khi click chọn các bài hát ở app-main
-    renderTrack(data) {
+    renderTrack(data, isPlaying) {
         const pageDetails = `
                 <section class="artist-hero">
                     <div class="hero-background">
@@ -178,8 +178,8 @@ class AppMain extends HTMLElement {
 
                 <!-- Artist Controls -->
                 <section class="artist-controls">
-                    <button class="play-btn-large">
-                        <i class="fas fa-play"></i>
+                    <button class="play-btn-large  play-btn-track">
+                        ${isPlaying ? `<i class="fa-solid fa-pause"></i>` : `<i class="fa-solid fa-play"></i>`}
                     </button>
                 </section>
 
@@ -188,8 +188,8 @@ class AppMain extends HTMLElement {
                     <h2 class="section-title">Popular</h2>
                     <div class="track-list">
                         <div class="track-item playing">
-                            <div class="track-btn-play">
-                                <i class="fa-solid fa-play"></i>
+                            <div class="play-btn-below play-btn-track">
+                                ${isPlaying ? `<i class="fa-solid fa-pause"></i>` : `<i class="fa-solid fa-play"></i>`}
                             </div>
                             <div class="track-image">
                                 <img
@@ -240,6 +240,7 @@ class AppMain extends HTMLElement {
         <style>${css}</style>
         ${html}
         `
+
         //render biggest hit và popular artist lần đầu
         import("../utils/utils.js").then(utils => {
             utils.getBiggestHits();
@@ -258,7 +259,7 @@ class AppMain extends HTMLElement {
         this.shadowRoot.addEventListener("click", async (e) => {
             const card = e.target.closest(".hit-card");
             const hitplayBtn = e.target.closest(".hit-play-btn");
-
+            
             if (hitplayBtn) {
                 id = card.getAttribute("data-id");
                 const allItems = this.shadowRoot.querySelectorAll(".hit-play-btn");
@@ -283,13 +284,32 @@ class AppMain extends HTMLElement {
             else if (card) {
                 id = card.getAttribute("data-id");
                 const dataTrack = await httpRequest.get(`/tracks/${id}`);
-                this.renderTrack(dataTrack);
+                //khi phát nhạc bên ngoài thì nút play bên trong hit-card đồng bộ
+                isPlaying = localStorage.getItem("isPlaying");
+                const idCurrentSong = localStorage.getItem("idCurrentSong");
+                if ((isPlaying === "true") && (idCurrentSong === id)) this.renderTrack(dataTrack, true);
+                else this.renderTrack(dataTrack, false);
 
-                const playbtnLarge = this.shadowRoot.querySelector(".play-btn-large");
-                playbtnLarge.addEventListener("click", (e) => {
-                    localStorage.setItem("idCurrentSong", id);
-                    localStorage.setItem("isPlaying", !isPlaying);
-                    isPlaying = !isPlaying;
+                this.shadowRoot.addEventListener("click", (e) => {
+                    const btnPlay = e.target.closest(".play-btn-track");
+                    const listBtns = this.shadowRoot.querySelectorAll(".play-btn-track"); //nút play bên trong hit card
+
+                    if (btnPlay) {
+                        isPlaying = localStorage.getItem("isPlaying") === "true" ? true : false;
+                        localStorage.setItem("idCurrentSong", id);
+                        localStorage.setItem("isPlaying", !isPlaying);
+                        isPlaying = !isPlaying;
+                        if (isPlaying) {
+                            listBtns.forEach(btn => {
+                                btn.innerHTML = `<i class="fa-solid fa-pause"></i>`
+                            })
+                        }
+                        else {
+                            listBtns.forEach(btn => {
+                                btn.innerHTML = `<i class="fas fa-play"></i>`
+                            })
+                        }
+                    }
                 })
             }
         })

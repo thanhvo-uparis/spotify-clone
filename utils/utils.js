@@ -16,6 +16,11 @@ export async function updateUiAfterLogin(data) {
 
     const userDropdown = await waitForShadowElement("app-heading", "#userDropdown");
     userDropdown.appendChild(dropdownItem);
+
+    //cập nhật avatar của người dùng, nếu bằng null => hiện avatar default
+    const avatarUrl = data.user["avatar_url"] ?? "../assets/img/img-avatar-default.png";
+    const avatarImg = await waitForShadowElement("app-heading", "#img-userAvatar");
+    avatarImg.setAttribute("src", avatarUrl);
 }
 
 export const refreshToken = async () => {
@@ -56,6 +61,9 @@ export const getBiggestHits = async () => {
             hitCard.className = "hit-card";
             const id = item.id;
             hitCard.setAttribute("data-id", id);
+
+            const idCurrentSong = localStorage.getItem("idCurrentSong");
+            const isPlaying = localStorage.getItem("isPlaying");
             const html = `
                 <div class="hit-card-cover">
                     <img
@@ -63,7 +71,7 @@ export const getBiggestHits = async () => {
                         alt="Flowers"
                     />
                     <button class="hit-play-btn">
-                        <i class="fas fa-play"></i>
+                        ${((idCurrentSong === id) && (isPlaying === "true")) ? `<i class="fa-solid fa-pause"></i>` : `<i class="fa-solid fa-play"></i>`}
                     </button>
                 </div>
                 <div class="hit-card-info">
@@ -86,6 +94,9 @@ export const getPopularArtists = async () => {
             artistCard.className = "artist-card";
             const id = item.id;
             artistCard.setAttribute("data-id", id);
+
+            const idCurrentArtist = localStorage.getItem("idCurrentArtist");
+            const isPlaying = localStorage.getItem("isPlaying");
             const html = `
                 <div class="artist-card-cover">
                     <img
@@ -93,7 +104,7 @@ export const getPopularArtists = async () => {
                         alt="Đen"
                     />
                     <button class="artist-play-btn">
-                        <i class="fas fa-play"></i>
+                        ${(idCurrentArtist === id) && (isPlaying === "true") ? `<i class="fa-solid fa-pause"></i>` : `<i class="fa-solid fa-play"></i>`}
                     </button>
                 </div>
                 <div class="artist-card-info">
@@ -123,7 +134,7 @@ export const getArtist = async () => {
                     class="item-image"
                 />
                 <button class = "sidebar-play-btn">
-                    <i class="fa-solid fa-pause"></i>
+                    <i class="fa-solid fa-play"></i>
                 </button>
             </div>
             <div class="item-info">
@@ -154,7 +165,7 @@ export const getPlaylist = async () => {
                     class="item-image"
                 />
                 <button class="sidebar-play-btn">
-                    <i class="fa-solid fa-pause"></i>
+                    <i class="fa-solid fa-play"></i>
                 </button>
             </div>
             <div class="item-info">
