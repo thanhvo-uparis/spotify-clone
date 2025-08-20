@@ -284,35 +284,50 @@ class AppMain extends HTMLElement {
             else if (card) {
                 id = card.getAttribute("data-id");
                 const dataTrack = await httpRequest.get(`/tracks/${id}`);
-                //khi phát nhạc bên ngoài thì nút play bên trong hit-card đồng bộ
+                //khi phát nhạc bên ngoài thì nút play bên trong hit-card đồng bộ UI
                 isPlaying = localStorage.getItem("isPlaying");
                 const idCurrentSong = localStorage.getItem("idCurrentSong");
                 if ((isPlaying === "true") && (idCurrentSong === id)) this.renderTrack(dataTrack, true);
                 else this.renderTrack(dataTrack, false);
 
-                this.shadowRoot.addEventListener("click", (e) => {
-                    const btnPlay = e.target.closest(".play-btn-track");
-                    const listBtns = this.shadowRoot.querySelectorAll(".play-btn-track"); //nút play bên trong hit card
-
-                    if (btnPlay) {
-                        isPlaying = localStorage.getItem("isPlaying") === "true" ? true : false;
-                        localStorage.setItem("idCurrentSong", id);
-                        localStorage.setItem("isPlaying", !isPlaying);
-                        isPlaying = !isPlaying;
-                        if (isPlaying) {
-                            listBtns.forEach(btn => {
-                                btn.innerHTML = `<i class="fa-solid fa-pause"></i>`
-                            })
-                        }
-                        else {
-                            listBtns.forEach(btn => {
-                                btn.innerHTML = `<i class="fas fa-play"></i>`
-                            })
-                        }
-                    }
-                })
+                
             }
         })
-    }
+
+        this.shadowRoot.addEventListener("click", async (e) => {
+            //khi đang phát nhạc bài A nhưng vào renderTrack bài B
+            const btnPlay = e.target.closest(".play-btn-track");
+            const listBtns = this.shadowRoot.querySelectorAll(".play-btn-track"); //nút play bên trong hit card
+
+                if (btnPlay && localStorage.getItem("idCurrentSong") !== id) {
+                    isPlaying = true;
+                    localStorage.setItem("idCurrentSong", id);
+                    localStorage.setItem("isPlaying", true);
+                    listBtns.forEach(btn => {
+                        btn.innerHTML = `<i class="fa-solid fa-pause"></i>`
+                    })
+                }
+                else if (btnPlay && localStorage.getItem("idCurrentSong") === id) {
+                    isPlaying = localStorage.getItem("isPlaying") === "true" ? true : false;
+                    localStorage.setItem("idCurrentSong", id);
+                    localStorage.setItem("isPlaying", !isPlaying);
+                    isPlaying = !isPlaying;
+
+                    if (isPlaying) {
+                        listBtns.forEach(btn => {
+                        btn.innerHTML = `<i class="fa-solid fa-pause"></i>`;
+                        })
+                    }
+                    else {
+                        listBtns.forEach(btn => {
+                        btn.innerHTML = `<i class="fas fa-play"></i>`
+                        })
+                    }
+                }
+            })
+    }           
 }
 customElements.define("app-main", AppMain);
+// vào track rồi mới play nhạc lần đầu
+// play nhạc rồi vào đúng track đang mở
+// play nhạc rồi vào track khác...xong play bài đó
