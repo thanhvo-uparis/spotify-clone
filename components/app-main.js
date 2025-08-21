@@ -248,6 +248,16 @@ class AppMain extends HTMLElement {
         })
     }
 
+    //hàm lắng nghe giá trị của id, isPlaying khi phát/dừng nhạc
+    listenerStateChange(id, isPlaying) {
+        window.dispatchEvent(new CustomEvent("playerStateChanged", {
+            detail: {
+                idCurrentSong: id,
+                isPlaying: isPlaying
+            }
+        }))
+    }
+
     async connectedCallback() {
         let isPlaying = false;
         localStorage.setItem("isPlaying", isPlaying);
@@ -268,11 +278,13 @@ class AppMain extends HTMLElement {
                     isPlaying = true;
                     localStorage.setItem("idCurrentSong", id);
                     localStorage.setItem("isPlaying", isPlaying);
+                    this.listenerStateChange(id, isPlaying); // lắng nghe việc phát/dừng nhạc
                 }
                 else {
                     localStorage.setItem("idCurrentSong", id);
                     localStorage.setItem("isPlaying", !isPlaying);
                     isPlaying = !isPlaying;
+                    this.listenerStateChange(id, isPlaying); // lắng nghe việc phát/dừng nhạc
                 }
                 
                 if (isPlaying) {
@@ -284,13 +296,11 @@ class AppMain extends HTMLElement {
             else if (card) {
                 id = card.getAttribute("data-id");
                 const dataTrack = await httpRequest.get(`/tracks/${id}`);
-                //khi phát nhạc bên ngoài thì nút play bên trong hit-card đồng bộ UI
+                //khi phát nhạc bên ngoài thì nút play bên trong hit-card đồng bộ trạng thái lần đầu
                 isPlaying = localStorage.getItem("isPlaying");
                 const idCurrentSong = localStorage.getItem("idCurrentSong");
                 if ((isPlaying === "true") && (idCurrentSong === id)) this.renderTrack(dataTrack, true);
                 else this.renderTrack(dataTrack, false);
-
-                
             }
         })
 
@@ -303,6 +313,7 @@ class AppMain extends HTMLElement {
                     isPlaying = true;
                     localStorage.setItem("idCurrentSong", id);
                     localStorage.setItem("isPlaying", true);
+                    this.listenerStateChange(id, isPlaying);
                     listBtns.forEach(btn => {
                         btn.innerHTML = `<i class="fa-solid fa-pause"></i>`
                     })
@@ -312,7 +323,7 @@ class AppMain extends HTMLElement {
                     localStorage.setItem("idCurrentSong", id);
                     localStorage.setItem("isPlaying", !isPlaying);
                     isPlaying = !isPlaying;
-
+                    this.listenerStateChange(id, isPlaying);
                     if (isPlaying) {
                         listBtns.forEach(btn => {
                         btn.innerHTML = `<i class="fa-solid fa-pause"></i>`;
@@ -324,10 +335,7 @@ class AppMain extends HTMLElement {
                         })
                     }
                 }
-            })
+        })
     }           
 }
 customElements.define("app-main", AppMain);
-// vào track rồi mới play nhạc lần đầu
-// play nhạc rồi vào đúng track đang mở
-// play nhạc rồi vào track khác...xong play bài đó
