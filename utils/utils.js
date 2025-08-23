@@ -149,30 +149,50 @@ export const getArtist = async () => {
         })
 }
 
+//render playlist
 export const getPlaylist = async () => {
         const libraryContent = await waitForShadowElement("app-sidebar", ".library-content");
-        const res = await httpRequest.get("/playlists?limit=4");
+        const res = await httpRequest.get("/me/playlists", {requiresAuth: true});
         const listPlaylists = res.playlists;
-        
+
         listPlaylists.map((item) => {
             let libraryItem = document.createElement("div");
             libraryItem.className = "library-item playlist";
-            let html =  `
-            <div class = "item-image-wrapper">
-                <img
-                    src="${item.image_url}"
-                    alt="${item.name}"
-                    class="item-image"
-                />
-                <button class="sidebar-play-btn">
-                    <i class="fa-solid fa-play"></i>
-                </button>
-            </div>
-            <div class="item-info">
-                <div class="item-title">${item.name}</div>
-                <div class="item-subtitle">Playlist</div>
-            </div>
-            `;
+            let html = "";
+            if (item.name === "Liked Songs") {
+                html = `
+                <div class="item-icon liked-songs">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="item-info">
+                    <div class="item-title">Liked Songs</div>
+                    <div class="item-subtitle">
+                        <i class="fas fa-thumbtack"></i>
+                        Playlist • ${item.total_tracks} songs
+                    </div>
+                </div>
+                `
+            }
+            else {
+                html =  `
+                <div class = "item-image-wrapper">
+                    <img
+                        src="${item.image_url}"
+                        alt="${item.name}"
+                        class="item-image"
+                    />
+                    <button class="sidebar-play-btn">
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+                <div class="item-info">
+                    <div class="item-title">${item.name}</div>
+                    <div class="item-subtitle">
+                    Playlist • ${item.user_username}
+                    </div>
+                </div>
+                `;
+            }
             const id = item.id;
             libraryItem.setAttribute("data-id", id);
             libraryItem.innerHTML = html;

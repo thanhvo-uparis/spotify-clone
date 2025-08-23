@@ -1,31 +1,28 @@
 import httpRequest from "../utils/httpRequest.js";
+import {getPlaylist} from "../utils/utils.js";
 
 class AppMain extends HTMLElement {
     constructor(){
         super();
         this.attachShadow({mode: "open"});
+        this.listPlaylistName = JSON.parse(localStorage.getItem("listPlaylistName") || "[]");
     }
     //render nội dung ở app-main khi click chọn các playlist bên sidebar
     renderPlaylist(dataPlaylist, dataTracks) {
             const pageDetails = `
                     <section class="artist-hero">
                         <div class="hero-background">
-                            <img
+                           <img
                                 src="${dataPlaylist.image_url}"
                                 alt=""
                                 class="hero-image"
                             />
-                            <div class="hero-overlay"></div>
                         </div>
                         <div class="hero-content">
-                            <div class="verified-badge">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Verified Artist</span>
-                            </div>
                             <p>${(dataPlaylist.is_public === 1) ? "Public Playlist" : "Private Playlist"}<p>
                             <h1 class="artist-name">${dataPlaylist.name}</h1>
                             <p class="monthly-listeners">
-                                ${dataPlaylist.user_username ?? "null"} ${dataPlaylist.total_tracks} songs, ${dataPlaylist.total_duration} sec
+                                ${dataPlaylist.user_username ?? "null"} • ${dataPlaylist.total_tracks} songs
                             </p>
                         </div>
                     </section>
@@ -48,6 +45,7 @@ class AppMain extends HTMLElement {
                 <style>${this.css}</style>
                 ${pageDetails}
             `
+            //render phần danh sách các bài hát của playlist
             const trackList = this.shadowRoot.querySelector(".track-list");
             dataTracks.forEach(track => {
                 const item = document.createElement("div");
@@ -218,6 +216,62 @@ class AppMain extends HTMLElement {
         `
     }
 
+    //cấp tên playlist mặc định
+    providePlaylistName() {
+        let number = 1;
+        let name = `My Playlist#${number}`;
+        while (this.listPlaylistName.includes(name)) {
+            number++;
+            name = `My Playlist#${number}`;
+        }
+        this.listPlaylistName.push(name);
+        localStorage.setItem("listPlaylistName", JSON.stringify(this.listPlaylistName));
+        return name;
+    }
+
+    async createPlaylist() {
+        const newPlaylistName = this.providePlaylistName();
+        
+        const res = await httpRequest.post("/playlists", {name: newPlaylistName, image_url: "https://www.afrocharts.com/images/song_cover.png"}, {requiresAuth: true});
+        
+        const pageDetails = `
+            <section class="artist-hero">
+                <div class="hero-background">
+                    <img
+                        src="${res.playlist.image_url}"
+                        alt=""
+                        class="hero-image"
+                    />
+                </div>
+                <div class="hero-content">
+                    <p>${res.playlist.is_public ? "Public Playlist" : "Private Playlist"}<p>
+                    <h1 class="artist-name">${newPlaylistName}</h1>
+                    <p class="monthly-listeners">
+                        ${res.playlist.user_username ?? "null"}
+                    </p>
+                </div>
+            </section>
+
+            <!-- Artist Controls -->
+            <section class="artist-controls">
+                <button class="play-btn-large">
+                    <i class="fas fa-play"></i>
+                </button>
+            </section>
+
+            <!-- Popular Tracks -->
+            <section class="popular-section">
+                <div class = "track-list">
+                </div>
+            </section>
+        `;
+    this.shadowRoot.innerHTML = `
+        ${this.fontAwesomeLink}
+        <style>${this.css}</style>
+        ${pageDetails}
+    `
+    }
+
     async renderHome() {
         const cssFiles = [
             "../templates/styles/reset.css",
@@ -304,6 +358,7 @@ class AppMain extends HTMLElement {
             }
         })
 
+        //khi ở bên trong mỗi card bài hát
         this.shadowRoot.addEventListener("click", async (e) => {
             //khi đang phát nhạc bài A nhưng vào renderTrack bài B
             const btnPlay = e.target.closest(".play-btn-track");

@@ -43,6 +43,21 @@
     gap: var(--spacing-xs);
 }
 
+.menu-create {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 13px;
+    top: 20%;
+    left: 18%;
+    width: 340px;
+    height: 73px;
+    border-radius: 6px;
+    background-color: #333;
+    visibility: hidden;
+}
+
 /* Main Content */
 .search-container {
     flex: 1;
