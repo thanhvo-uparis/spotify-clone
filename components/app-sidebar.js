@@ -51,20 +51,18 @@ class AppSideBar extends HTMLElement {
             if (isPlaylist) {
                 let idCurrentPlaylist = item.dataset.id;
                 localStorage.setItem("idCurrentPlaylist", idCurrentPlaylist);
-                console.log(idCurrentPlaylist);
                 
-                const dataPlaylist =  await httpRequest.get(`/playlists/${idCurrentPlaylist}`, {requiresAuth: true});
-                const dataTracks = await httpRequest.get(`/playlists/${idCurrentPlaylist}/tracks`, {requiresAuth: true});
+                const dataPlaylistById =  await httpRequest.get(`/playlists/${idCurrentPlaylist}`, {requiresAuth: true});
+                const dataPlaylistTracks = await httpRequest.get(`/playlists/${idCurrentPlaylist}/tracks`, {requiresAuth: true});
                 const appMain = document.querySelector("app-main");
-                if (appMain && typeof appMain.renderPlaylist === "function") {
-                    appMain.renderPlaylist(dataPlaylist, dataTracks.tracks);
+                if (appMain && typeof appMain.renderPlaylistDetails === "function") {
+                    appMain.renderPlaylistDetails(dataPlaylistById, dataPlaylistTracks.tracks);
                 }
             }
         })
 
         //when create new playlist
         const btnCreate = this.shadowRoot.querySelector(".create-btn");
-        // const userCurrent = await httpRequest.get("/users/me", {requiresAuth: true});
         btnCreate.addEventListener("click", async (e) => {
             const appMain = document.querySelector("app-main");
             if (appMain && typeof appMain.createPlaylist === "function") {

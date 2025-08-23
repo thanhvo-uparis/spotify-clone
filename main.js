@@ -5,9 +5,35 @@ import "./components/app-footer.js"
 
 import httpRequest from './utils/httpRequest.js';
 import {showSignupForm, showLoginForm, openModal, closeModal} from './utils/authModal.js'
-import {updateUiAfterLogin, refreshToken, getBiggestHits, getPopularArtists, getArtist, getPlaylist, getId, renderHomePage} from './utils/utils.js';
+import {updateUiAfterLogin, refreshToken, getBiggestHits, getPopularArtists, getArtist, getPlaylist, getId, renderHomePage, uploadPlaylist} from './utils/utils.js';
 
 getPlaylist();
+uploadPlaylist();
+
+//hiện ảnh playlist tạm thời
+document.addEventListener("DOMContentLoaded", async (e) => {
+    const btnEdit = document.getElementById("icon-edit-img-playlist");
+    const imgUpload = document.getElementById("img-upload");
+    const imgPlaylist = document.getElementById("img-playlist");
+    btnEdit.addEventListener("click", (e) => {
+        imgUpload.click();
+    })
+    imgUpload.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            imgPlaylist.setAttribute("src", URL.createObjectURL(file));
+        }
+    })
+})
+
+//ẩn modal edit playlist khi nhấn nút close
+document.addEventListener("DOMContentLoaded", async function (e) {
+    const btnClose = document.getElementById("btn-close");
+    const modalEditPlaylist = document.querySelector(".modal-edit-playlist-overlay");
+    btnClose.addEventListener("click", (e) => {
+        modalEditPlaylist.style.display = "none";
+    })
+})
 
 //quay về home khi bấm vào logo và icon HOME
 document.addEventListener("DOMContentLoaded", async function () {

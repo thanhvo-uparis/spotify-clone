@@ -22,7 +22,11 @@ class HttpRequest {
                 _options.headers["Authorization"] = `Bearer ${token}`;
             }
 
-            if (data) {
+            if (data instanceof FormData) {
+                delete _options.headers["Content-Type"];
+                _options.body = data;
+            }
+            else if (data) {
                 _options.body = JSON.stringify(data)
             }
 

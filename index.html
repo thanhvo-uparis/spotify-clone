@@ -23,6 +23,34 @@
             <!-- Bottom Player -->
             <app-footer></app-footer>
         </div>
+        
+        <!-- Modal to edit Playlist -->
+         <div class="modal-edit-playlist-overlay">
+            <div class="modal-edit-playlist-container">
+                <div class="modal-edit-playlist-heading">
+                    <h2>Edit details</h2>
+                    <button id="btn-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-edit-playlist-content">
+                    <div class="img-content">
+                        <img id="img-playlist" src="" alt="">
+                        <div class="img-overlay">
+                            <input type="file" id="img-upload" accept="image/*" style="display: none;">
+                            <button id="icon-edit-img-playlist"><i class="fa-solid fa-pen"></i></button>
+                        </div>
+                    </div>
+                    <div class="info-content">
+                        <input type="text" id="name-playlist">
+                        <textarea id="description-playlist"></textarea>
+                    </div>
+                </div>
+                <div class="modal-edit-playlist-footer">
+                    <button id="btn-save">Save</button>
+                </div>
+            </div>
+         </div>
 
         <!-- Auth Modal -->
         <div class="modal-overlay" id="authModal">

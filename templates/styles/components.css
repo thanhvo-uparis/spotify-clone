@@ -426,12 +426,15 @@
     font-size: 16px;
 }
 
-.artist-name {
-    font-size: 96px;
-    font-weight: 900;
+.artist-name,
+.playlist-name {
+    width: 100%;
+    font-size: 4.5rem;
+    white-space: nowrap;
     color: var(--text-primary);
     margin-bottom: var(--spacing-sm);
     line-height: 1;
+    cursor: pointer;
 }
 
 .monthly-listeners {
@@ -733,8 +736,8 @@
     font-size: 10px;
 }
 
-/* Modal of create a new playlist */
-.modal-playlist-overlay {
+/* Modal for create a new playlist */
+.modal-edit-playlist-overlay {
     position: fixed;
     display: none;
     top: 0;
@@ -747,52 +750,108 @@
     z-index: 9999;
 }
 
-.modal-playlist-container {
+.modal-edit-playlist-container {
     position: relative;
     width: 522px;
     height: 383px;
-    padding: 16px;
-    border-radius: 7px;
-    background-color: rgba(228, 219, 219, 0.7);
+    padding: 20px;
+    background: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    overflow: auto;
 }
 
-.createPlaylist-heading {
+.modal-edit-playlist-heading {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 16px;
+    align-items: center;
+}
+
+.modal-edit-playlist-heading h2 {
+    margin: 0 0 20px;
+    font-size: 24px;
 }
 
 #btn-close {
-    font-size: 23px;
+    font-size: 24px;
+    color: #c4bebe;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
 }
 
-.createPlaylist-content {
+.modal-edit-playlist-content {
     display: flex;
     justify-content: space-between;
+    margin: 20px 0;
 }
 
 .img-content {
+    position: relative;
     width: 182px;
     height: 180px;
-    border: 1px solid red;
+    background: #333;
+}
+
+#img-playlist {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* lớp phủ lên phần ảnh của playlist */
+.img-overlay {
+    position: absolute;
+    display: none;
+    place-items: center;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.img-content:hover .img-overlay{
+    display: grid;
+}
+#icon-edit-img-playlist {
+    font-size: 60px;
 }
 
 .info-content {
+    display: flex;
+    flex-direction: column;
     width: 279px;
     height: 178px;
-    border: 1px solid red;
 }
 
-.createPlaylist-footer {
+.info-content #name-playlist {
+    height: 39px;
+    margin-bottom: 20px;
+    background: #333;
+}
+
+.info-content #description-playlist {
+    background: #333;
+    height: 100%;
+}
+
+.modal-edit-playlist-footer {
     display: flex;
     justify-content: end;
 }
 
 #btn-save {
-    margin: 12px;
-    padding: 12px;
-    border-radius: 17px;
-    background-color: #c4efd9;
+    width: 99px;
+    height: 45px;
+    font-size: 16px;
+    text-align: center;
+    background: #fff;
+    color: #000;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
 }
 
 /* Modal */

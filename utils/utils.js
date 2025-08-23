@@ -154,7 +154,7 @@ export const getPlaylist = async () => {
         const libraryContent = await waitForShadowElement("app-sidebar", ".library-content");
         const res = await httpRequest.get("/me/playlists", {requiresAuth: true});
         const listPlaylists = res.playlists;
-
+        libraryContent.innerHTML = ""; //tránh trường hợp render cộng dồn
         listPlaylists.map((item) => {
             let libraryItem = document.createElement("div");
             libraryItem.className = "library-item playlist";
@@ -222,4 +222,58 @@ export async function renderHomePage(elementTarget) {
     if (elementTarget && appMain && typeof appMain.renderHome === "function") {
         await appMain.renderHome();
     }
+}
+
+//open modal edit playlist
+export async function openEditPlaylist() {
+    const modal = document.querySelector(".modal-edit-playlist-overlay");
+    const imgPlaylist = document.getElementById("img-playlist");
+    const namePlaylist = document.getElementById("name-playlist");
+    const descriptionPlaylist = document.getElementById("description-playlist");
+    
+    // const idCurrentPlaylist = localStorage.getItem("idCurrentPlaylist");
+    const dataPlaylist = await httpRequest.get(`/playlists/${localStorage.getItem("idCurrentPlaylist")}`, {requiresAuth: true});
+    //set các các giá trị có sẵn của playlist vào modal
+    imgPlaylist.setAttribute("src", dataPlaylist.image_url);
+    namePlaylist.value = dataPlaylist.name;
+    descriptionPlaylist.value = dataPlaylist.description ?? "";
+
+    //hiện thị modal sau khi set các giá trị
+    modal.style.display = "flex";
+}
+
+//đóng modal sửa playlist
+export async function closeEditPlaylist() {
+    const modalEditPlaylist = document.querySelector(".modal-edit-playlist-overlay");
+    modalEditPlaylist.style.display = "none";
+}
+
+//khi nhấn nút Save để update playlist
+export async function uploadPlaylist() {
+    const btnSave = document.getElementById("btn-save");
+    //lấy ảnh được chọn
+    // const imgUpload = document.getElementById("img-upload");
+    // let file = null
+    // imgUpload.addEventListener("change", (e) => {
+    //     file = imgUpload.files[0];
+    // })
+    
+    // const formData = new FormData();
+    // formData.append("image_url", file);
+
+    //lấy dữ liệu
+    const namePlaylist = document.getElementById("name-playlist");
+    const descriptionPlaylist = document.getElementById("description-playlist");
+    // formData.append("name", namePlaylist.value);
+    // formData.append("description", descriptionPlaylist.value);
+    btnSave.addEventListener("click", async () => {
+        const update = await httpRequest.put(`/playlists/${localStorage.getItem("idCurrentPlaylist")}`, {name: namePlaylist.value, description: descriptionPlaylist.value}, {requiresAuth: true});
+        console.log(update.playlist.name, update.playlist.id, );
+        //đóng modal và render lại playlist ở sidebar
+        await closeEditPlaylist();
+        await getPlaylist();
+        //lấy phần tử item đầu tiên vì mỗi lần sửa xong là nó push lên đầu (chính là playlist mới edit)
+        const libraryItem = await waitForShadowElement("app-sidebar", ".library-item");
+        libraryItem.click(); //giả sử như click vào playlist mới edit
+    })
 }

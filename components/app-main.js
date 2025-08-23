@@ -1,5 +1,5 @@
 import httpRequest from "../utils/httpRequest.js";
-import {getPlaylist} from "../utils/utils.js";
+import {getPlaylist, openEditPlaylist} from "../utils/utils.js";
 
 class AppMain extends HTMLElement {
     constructor(){
@@ -8,21 +8,23 @@ class AppMain extends HTMLElement {
         this.listPlaylistName = JSON.parse(localStorage.getItem("listPlaylistName") || "[]");
     }
     //render nội dung ở app-main khi click chọn các playlist bên sidebar
-    renderPlaylist(dataPlaylist, dataTracks) {
+    //dataPlaylistById: from endpoint Get Playlist by ID
+    //dataPlaylistTracks: from endpoint Get Playlist Tracks
+    renderPlaylistDetails(dataPlaylistById, dataPlaylistTracks) {
             const pageDetails = `
                     <section class="artist-hero">
                         <div class="hero-background">
                            <img
-                                src="${dataPlaylist.image_url}"
+                                src="${dataPlaylistById.image_url}"
                                 alt=""
                                 class="hero-image"
                             />
                         </div>
                         <div class="hero-content">
-                            <p>${(dataPlaylist.is_public === 1) ? "Public Playlist" : "Private Playlist"}<p>
-                            <h1 class="artist-name">${dataPlaylist.name}</h1>
+                            <p>${(dataPlaylistById.is_public === 1) ? "Public Playlist" : "Private Playlist"}<p>
+                            <h1 class="playlist-name">${dataPlaylistById.name}</h1>
                             <p class="monthly-listeners">
-                                ${dataPlaylist.user_username ?? "null"} • ${dataPlaylist.total_tracks} songs
+                                ${dataPlaylistById.user_username ?? "null"} • ${dataPlaylistById.total_tracks} songs
                             </p>
                         </div>
                     </section>
@@ -47,7 +49,7 @@ class AppMain extends HTMLElement {
             `
             //render phần danh sách các bài hát của playlist
             const trackList = this.shadowRoot.querySelector(".track-list");
-            dataTracks.forEach(track => {
+            dataPlaylistTracks.forEach(track => {
                 const item = document.createElement("div");
                 item.className = "track-item";
                 item.setAttribute("data-trackId", track.track_id);
@@ -390,6 +392,14 @@ class AppMain extends HTMLElement {
                         })
                     }
                 }
+        })
+
+        //khi bấm chọn vào tên của playlist ở app-main
+        this.shadowRoot.addEventListener("click", async (e) => {
+            const playlistNameElement = e.target.closest(".playlist-name");
+            if (playlistNameElement) {
+                openEditPlaylist();
+            }
         })
     }           
 }
