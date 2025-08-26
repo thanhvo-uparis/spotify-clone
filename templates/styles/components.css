@@ -478,6 +478,21 @@
     margin-left: 2px;
 }
 
+/* nút follow artist */
+.follow-btn {
+    padding: 8px;
+    color: #fff;
+    background-color: #333;
+    border-radius: 8px;
+}
+
+.follow-btn:hover {
+    cursor: pointer;
+}
+#add-track {
+    margin-right: 12px;
+}
+
 /* Track List */
 .popular-section {
     margin-bottom: var(--spacing-2xl);

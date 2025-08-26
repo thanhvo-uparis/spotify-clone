@@ -34,7 +34,7 @@ class HttpRequest {
 
             if (!res.ok) {
                 const errorData = await res.json().catch(() => ({}));
-                throw new Error(errorData.message || `Lỗi HTTP: ${res.status}`);
+                throw new Error(errorData.message || `Error HTTP: ${res.status}`);
             }
             const response =  await res.json();
             return response;

@@ -79,13 +79,19 @@ class AppMain extends HTMLElement {
             })
     }
     //render nội dung ở app-main khi click chọn các artist bên sidebar
-    renderArtist(data) {
-            const tracks = data.tracks;
+    renderArtist(dataArtist, dataTracks) {
+            const tracks = dataTracks.tracks;
+            let isFllowing = null;
+            if (dataArtist.is_following) {
+                isFllowing = "Following";
+            }
+            else isFllowing = "Follow";
+
             const pageDetails = `
                     <section class="artist-hero">
                         <div class="hero-background">
                             <img
-                                src="${data.artist.image_url}"
+                                src="${dataArtist.image_url}"
                                 alt=""
                                 class="hero-image"
                             />
@@ -96,7 +102,7 @@ class AppMain extends HTMLElement {
                                 <i class="fas fa-check-circle"></i>
                                 <span>Verified Artist</span>
                             </div>
-                            <h1 class="artist-name">${data.artist.name}</h1>
+                            <h1 class="artist-name">${dataArtist.name}</h1>
                             <p class="monthly-listeners">
                                 1,021,833 monthly listeners
                             </p>
@@ -108,6 +114,9 @@ class AppMain extends HTMLElement {
                         <button class="play-btn-large">
                             <i class="fas fa-play"></i>
                         </button>
+                        <span class="follow-btn">
+                            ${isFllowing}
+                        </span>
                     </section>
 
                     <!-- Popular Tracks -->
@@ -144,6 +153,7 @@ class AppMain extends HTMLElement {
                         </div>
                     </div>
                     <div class="track-plays">${track.play_count}</div>
+                    <div id="add-track"><i class="fa-solid fa-plus" title="Add Track"></i></div>
                     <div class="track-duration">4:12</div>
                     <button class="track-menu-btn">
                         <i class="fas fa-ellipsis-h"></i>
@@ -379,11 +389,13 @@ class AppMain extends HTMLElement {
             else if (artistCard) {
                 let idArtist = artistCard.getAttribute("data-id");
                 localStorage.setItem("idCurrentArtist", idArtist);
-                const data = await httpRequest.get(`/artists/${idArtist}/tracks/popular`); 
+                const dataArtist = await httpRequest.get(`/artists/${idArtist}`, {requiresAuth: true}); 
+                const dataTracks = await httpRequest.get(`/artists/${idArtist}/tracks/popular`, {requiresAuth: true}); 
                 //khi phát nhạc bên ngoài thì nút play bên trong hit-card đồng bộ trạng thái lần đầu
                 isPlaying = localStorage.getItem("isPlaying");
-                id = data.tracks[0].id;
-                this.renderArtist(data);
+                const firstSong = dataTracks.tracks[0];
+                // id = firstSong.id;
+                this.renderArtist(dataArtist, dataTracks);
             }
         })
 
@@ -428,6 +440,68 @@ class AppMain extends HTMLElement {
                 openEditPlaylist();
             }
         })
+
+        //khi follow Artist
+        this.shadowRoot.addEventListener("click", async (e) => {
+            const followBtn = e.target.closest(".follow-btn");
+            let isFollowing = null;
+            let isUnfollow = null;
+            let idArtist = null;
+            if (followBtn) {
+                isFollowing = followBtn.innerHTML.trim().includes("Following");
+                isUnfollow = followBtn.innerHTML.trim().includes("Follow");
+                idArtist = localStorage.getItem("idCurrentArtist");
+            }
+
+            if (followBtn && isUnfollow) {
+                try {
+                    const idArtist = localStorage.getItem("idCurrentArtist");
+                    const data = await httpRequest.post(`/artists/${idArtist}/follow`, null, {requiresAuth: true});
+                    Toastify({
+                    text: data.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#1db954",
+                    }).showToast();
+                    
+                } catch (error) {
+                    Toastify({
+                    text: error.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#e74c3c",
+                    }).showToast();
+                }
+            }
+            if (followBtn && isFollowing) {
+                try {
+                    const data = await httpRequest.del(`/artists/${idArtist}/follow`, {requiresAuth: true});
+                    Toastify({
+                    text: data.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#1db954",
+                    }).showToast();
+                    
+                } catch (error) {
+                    Toastify({
+                    text: error.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#e74c3c",
+                    }).showToast();
+                }
+            }
+
+            const dataArtist = await httpRequest.get(`/artists/${idArtist}`, {requiresAuth: true}); 
+            const dataTracks = await httpRequest.get(`/artists/${idArtist}/tracks/popular`, {requiresAuth: true});
+            this.renderArtist(dataArtist, dataTracks);
+        })
+
     }           
 }
 customElements.define("app-main", AppMain);

@@ -41,11 +41,12 @@ class AppSideBar extends HTMLElement {
             }
             if (isArtist) {
                 let idCurrentArtist = item.dataset.id;
-                const data =  await httpRequest.get(`/artists/${idCurrentArtist}/tracks/popular`);                
+                const dataArtist = await httpRequest.get(`/artists/${idCurrentArtist}`, {requiresAuth: true}); 
+                const dataTracks =  await httpRequest.get(`/artists/${idCurrentArtist}/tracks/popular`, {requiresAuth: true});                
                 localStorage.setItem("idCurrentArtist", idCurrentArtist);
                 const appMain = document.querySelector("app-main");
                 if (appMain && typeof appMain.renderArtist === "function") {
-                    appMain.renderArtist(data);
+                    appMain.renderArtist(dataArtist, dataTracks);
                 }
             }
             if (isPlaylist) {

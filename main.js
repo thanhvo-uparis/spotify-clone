@@ -209,9 +209,22 @@ signupForm.addEventListener("submit", async (event) => {
         localStorage.setItem("email", data.user["email"]);
         localStorage.setItem("password", password);
         showLoginForm();
-        alert(`Chào bạn ${username}, bạn đã tạo tài khoản thành công!\nVui lòng đăng nhập.`);
+
+        Toastify({
+        text: data.message,
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        backgroundColor: "#1db954",
+        }).showToast();
     } catch (error) {
-        console.error("Lỗi đăng ký: ", error.message);
+        Toastify({
+        text: error.message,
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        backgroundColor: "#e74c3c",
+        }).showToast();
     }
 });
 
@@ -224,7 +237,20 @@ loginForm.addEventListener("submit", async (event) => {
         const data = await httpRequest.post("/auth/login", {email, password});
         localStorage.setItem("access_token", data.access_token);
         updateUiAfterLogin(data);
+        Toastify({
+        text: data.message,
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        backgroundColor: "#1db954",
+        }).showToast();
     } catch (error) {
-        console.error("Lỗi đăng nhập: ", error.message);
+        Toastify({
+        text: error.message,
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        backgroundColor: "#e74c3c",
+        }).showToast();
     }
 })
